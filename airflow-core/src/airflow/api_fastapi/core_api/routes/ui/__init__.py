@@ -20,6 +20,7 @@ from fastapi import Depends
 
 from airflow.api_fastapi.common.router import AirflowRouter
 from airflow.api_fastapi.core_api.routes.ui.assets import assets_router
+from airflow.api_fastapi.core_api.routes.ui.assetwatchers import assetwatchers_router
 from airflow.api_fastapi.core_api.routes.ui.auth import auth_router
 from airflow.api_fastapi.core_api.routes.ui.backfills import backfills_router
 from airflow.api_fastapi.core_api.routes.ui.calendar import calendar_router
@@ -44,6 +45,7 @@ ui_router = AirflowRouter(prefix="/ui", include_in_schema=False, dependencies=[D
 
 ui_router.include_router(auth_router)
 ui_router.include_router(assets_router)
+ui_router.include_router(assetwatchers_router)
 ui_router.include_router(dag_runs_router)
 ui_router.include_router(execution_router)
 ui_router.include_router(partitioned_dag_runs_router)

@@ -1,7 +1,7 @@
 // generated with @7nohe/openapi-react-query-codegen@1.6.2 
 
 import { UseQueryResult } from "@tanstack/react-query";
-import { AssetService, AssetStateStoreService, AuthLinksService, BackfillService, CalendarService, ConfigService, ConnectionService, DagBundleService, DagParsingService, DagRunService, DagService, DagSourceService, DagStatsService, DagVersionService, DagWarningService, DashboardService, DeadlinesService, DependenciesService, EventLogService, ExperimentalService, ExtraLinksService, GanttService, GridService, ImportErrorService, JobService, LoginService, MonitorService, PartitionedDagRunService, PluginService, PoolService, ProviderService, StructureService, TaskInstanceService, TaskService, TaskStateStoreService, TeamsService, VariableService, VersionService, XcomService } from "../requests/services.gen";
+import { AssetService, AssetStateStoreService, AssetWatcherService, AuthLinksService, BackfillService, CalendarService, ConfigService, ConnectionService, DagBundleService, DagParsingService, DagRunService, DagService, DagSourceService, DagStatsService, DagVersionService, DagWarningService, DashboardService, DeadlinesService, DependenciesService, EventLogService, ExperimentalService, ExtraLinksService, GanttService, GridService, ImportErrorService, JobService, LoginService, MonitorService, PartitionedDagRunService, PluginService, PoolService, ProviderService, StructureService, TaskInstanceService, TaskService, TaskStateStoreService, TeamsService, VariableService, VersionService, XcomService } from "../requests/services.gen";
 import { DagRunState, DagSchedulingState, ReprocessBehavior } from "../requests/types.gen";
 export type AssetServiceGetAssetsDefaultResponse = Awaited<ReturnType<typeof AssetService.getAssets>>;
 export type AssetServiceGetAssetsQueryResult<TData = AssetServiceGetAssetsDefaultResponse, TError = unknown> = UseQueryResult<TData, TError>;
@@ -1095,6 +1095,27 @@ export type AuthLinksServiceGetCurrentUserInfoDefaultResponse = Awaited<ReturnTy
 export type AuthLinksServiceGetCurrentUserInfoQueryResult<TData = AuthLinksServiceGetCurrentUserInfoDefaultResponse, TError = unknown> = UseQueryResult<TData, TError>;
 export const useAuthLinksServiceGetCurrentUserInfoKey = "AuthLinksServiceGetCurrentUserInfo";
 export const UseAuthLinksServiceGetCurrentUserInfoKeyFn = (queryKey?: Array<unknown>) => [useAuthLinksServiceGetCurrentUserInfoKey, ...(queryKey ?? [])];
+export type AssetWatcherServiceGetAssetwatcherDefaultResponse = Awaited<ReturnType<typeof AssetWatcherService.getAssetwatcher>>;
+export type AssetWatcherServiceGetAssetwatcherQueryResult<TData = AssetWatcherServiceGetAssetwatcherDefaultResponse, TError = unknown> = UseQueryResult<TData, TError>;
+export const useAssetWatcherServiceGetAssetwatcherKey = "AssetWatcherServiceGetAssetwatcher";
+export const UseAssetWatcherServiceGetAssetwatcherKeyFn = ({ assetwatcherId }: {
+  assetwatcherId: string;
+}, queryKey?: Array<unknown>) => [useAssetWatcherServiceGetAssetwatcherKey, ...(queryKey ?? [{ assetwatcherId }])];
+export type AssetWatcherServiceGetAssetwatcherLogDefaultResponse = Awaited<ReturnType<typeof AssetWatcherService.getAssetwatcherLog>>;
+export type AssetWatcherServiceGetAssetwatcherLogQueryResult<TData = AssetWatcherServiceGetAssetwatcherLogDefaultResponse, TError = unknown> = UseQueryResult<TData, TError>;
+export const useAssetWatcherServiceGetAssetwatcherLogKey = "AssetWatcherServiceGetAssetwatcherLog";
+export const UseAssetWatcherServiceGetAssetwatcherLogKeyFn = ({ accept, assetwatcherId, dagId, dagRunId, fullContent, mapIndex, regionId, regionIndex, taskId, token }: {
+  accept?: "application/json" | "*/*" | "application/x-ndjson";
+  assetwatcherId: string;
+  dagId: string;
+  dagRunId: string;
+  fullContent?: boolean;
+  mapIndex?: number;
+  regionId?: string;
+  regionIndex?: number;
+  taskId: string;
+  token?: string;
+}, queryKey?: Array<unknown>) => [useAssetWatcherServiceGetAssetwatcherLogKey, ...(queryKey ?? [{ accept, assetwatcherId, dagId, dagRunId, fullContent, mapIndex, regionId, regionIndex, taskId, token }])];
 export type PartitionedDagRunServiceGetPartitionedDagRunsDefaultResponse = Awaited<ReturnType<typeof PartitionedDagRunService.getPartitionedDagRuns>>;
 export type PartitionedDagRunServiceGetPartitionedDagRunsQueryResult<TData = PartitionedDagRunServiceGetPartitionedDagRunsDefaultResponse, TError = unknown> = UseQueryResult<TData, TError>;
 export const usePartitionedDagRunServiceGetPartitionedDagRunsKey = "PartitionedDagRunServiceGetPartitionedDagRuns";

@@ -1,7 +1,7 @@
 // generated with @7nohe/openapi-react-query-codegen@1.6.2 
 
 import { type QueryClient } from "@tanstack/react-query";
-import { AssetService, AssetStateStoreService, AuthLinksService, BackfillService, CalendarService, ConfigService, ConnectionService, DagBundleService, DagRunService, DagService, DagSourceService, DagStatsService, DagVersionService, DagWarningService, DashboardService, DeadlinesService, DependenciesService, EventLogService, ExperimentalService, ExtraLinksService, GanttService, GridService, ImportErrorService, JobService, LoginService, MonitorService, PartitionedDagRunService, PluginService, PoolService, ProviderService, StructureService, TaskInstanceService, TaskService, TaskStateStoreService, TeamsService, VariableService, VersionService, XcomService } from "../requests/services.gen";
+import { AssetService, AssetStateStoreService, AssetWatcherService, AuthLinksService, BackfillService, CalendarService, ConfigService, ConnectionService, DagBundleService, DagRunService, DagService, DagSourceService, DagStatsService, DagVersionService, DagWarningService, DashboardService, DeadlinesService, DependenciesService, EventLogService, ExperimentalService, ExtraLinksService, GanttService, GridService, ImportErrorService, JobService, LoginService, MonitorService, PartitionedDagRunService, PluginService, PoolService, ProviderService, StructureService, TaskInstanceService, TaskService, TaskStateStoreService, TeamsService, VariableService, VersionService, XcomService } from "../requests/services.gen";
 import { DagRunState, DagSchedulingState, ReprocessBehavior } from "../requests/types.gen";
 import * as Common from "./common";
 /**
@@ -2171,6 +2171,45 @@ export const prefetchUseAuthLinksServiceGetAuthMenus = (queryClient: QueryClient
 * @throws ApiError
 */
 export const prefetchUseAuthLinksServiceGetCurrentUserInfo = (queryClient: QueryClient) => queryClient.prefetchQuery({ queryKey: Common.UseAuthLinksServiceGetCurrentUserInfoKeyFn(), queryFn: () => AuthLinksService.getCurrentUserInfo() });
+/**
+* Get Assetwatcher
+* @param data The data for the request.
+* @param data.assetwatcherId
+* @returns AssetWatcherResponse Successful Response
+* @throws ApiError
+*/
+export const prefetchUseAssetWatcherServiceGetAssetwatcher = (queryClient: QueryClient, { assetwatcherId }: {
+  assetwatcherId: string;
+}) => queryClient.prefetchQuery({ queryKey: Common.UseAssetWatcherServiceGetAssetwatcherKeyFn({ assetwatcherId }), queryFn: () => AssetWatcherService.getAssetwatcher({ assetwatcherId }) });
+/**
+* Get Assetwatcher Log
+* Get logs for a specific task instance.
+* @param data The data for the request.
+* @param data.assetwatcherId
+* @param data.dagId
+* @param data.dagRunId
+* @param data.taskId
+* @param data.fullContent
+* @param data.token
+* @param data.mapIndex
+* @param data.regionId
+* @param data.regionIndex
+* @param data.accept
+* @returns TaskInstancesLogResponse Successful Response
+* @throws ApiError
+*/
+export const prefetchUseAssetWatcherServiceGetAssetwatcherLog = (queryClient: QueryClient, { accept, assetwatcherId, dagId, dagRunId, fullContent, mapIndex, regionId, regionIndex, taskId, token }: {
+  accept?: "application/json" | "*/*" | "application/x-ndjson";
+  assetwatcherId: string;
+  dagId: string;
+  dagRunId: string;
+  fullContent?: boolean;
+  mapIndex?: number;
+  regionId?: string;
+  regionIndex?: number;
+  taskId: string;
+  token?: string;
+}) => queryClient.prefetchQuery({ queryKey: Common.UseAssetWatcherServiceGetAssetwatcherLogKeyFn({ accept, assetwatcherId, dagId, dagRunId, fullContent, mapIndex, regionId, regionIndex, taskId, token }), queryFn: () => AssetWatcherService.getAssetwatcherLog({ accept, assetwatcherId, dagId, dagRunId, fullContent, mapIndex, regionId, regionIndex, taskId, token }) });
 /**
 * Get Partitioned Dag Runs
 * Return PartitionedDagRuns. Filter by dag_id and/or has_created_dag_run_id.

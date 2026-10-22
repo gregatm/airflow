@@ -226,6 +226,7 @@ export type AssetWatcherResponse = {
     name: string;
     trigger_id: number;
     created_date: string;
+    trigger: TriggerResponse | null;
 };
 
 /**
@@ -2436,6 +2437,7 @@ export type TriggerResponse = {
     created_date: string;
     queue: string | null;
     triggerer_id: number | null;
+    triggerer_job: JobResponse | null;
 };
 
 /**
@@ -5426,6 +5428,27 @@ export type GenerateTokenData = {
 
 export type GenerateTokenResponse2 = GenerateTokenResponse;
 
+export type GetAssetwatcherData = {
+    assetwatcherId: string;
+};
+
+export type GetAssetwatcherResponse = AssetWatcherResponse;
+
+export type GetAssetwatcherLogData = {
+    accept?: 'application/json' | 'application/x-ndjson' | '*/*';
+    assetwatcherId: string;
+    dagId: string;
+    dagRunId: string;
+    fullContent?: boolean;
+    mapIndex?: number;
+    regionId?: string | null;
+    regionIndex?: number | null;
+    taskId: string;
+    token?: string | null;
+};
+
+export type GetAssetwatcherLogResponse = TaskInstancesLogResponse;
+
 export type GetPartitionedDagRunsData = {
     dagId?: string | null;
     hasCreatedDagRunId?: boolean | null;
@@ -6441,7 +6464,7 @@ export type $OpenApiTs = {
                  */
                 409: HTTPExceptionResponse;
                 /**
-                 * Unprocessable Entity
+                 * Unprocessable Content
                  */
                 422: HTTPExceptionResponse;
             };
@@ -7315,7 +7338,7 @@ export type $OpenApiTs = {
                  */
                 404: HTTPExceptionResponse;
                 /**
-                 * Unprocessable Entity
+                 * Unprocessable Content
                  */
                 422: HTTPExceptionResponse;
             };
@@ -7377,7 +7400,7 @@ export type $OpenApiTs = {
                  */
                 409: HTTPExceptionResponse;
                 /**
-                 * Unprocessable Entity
+                 * Unprocessable Content
                  */
                 422: HTTPExceptionResponse;
             };
@@ -9748,6 +9771,52 @@ export type $OpenApiTs = {
             };
         };
     };
+    '/ui/assetwatchers/{assetwatcher_id}': {
+        get: {
+            req: GetAssetwatcherData;
+            res: {
+                /**
+                 * Successful Response
+                 */
+                200: AssetWatcherResponse;
+                /**
+                 * Not Found
+                 */
+                404: HTTPExceptionResponse;
+                /**
+                 * Validation Error
+                 */
+                422: HTTPValidationError;
+            };
+        };
+    };
+    '/ui/assetwatchers/{assetwatcher_id}/log': {
+        get: {
+            req: GetAssetwatcherLogData;
+            res: {
+                /**
+                 * Successful Response
+                 */
+                200: TaskInstancesLogResponse;
+                /**
+                 * Bad Request
+                 */
+                400: HTTPExceptionResponse;
+                /**
+                 * Not Found
+                 */
+                404: HTTPExceptionResponse;
+                /**
+                 * Conflict
+                 */
+                409: HTTPExceptionResponse;
+                /**
+                 * Validation Error
+                 */
+                422: HTTPValidationError;
+            };
+        };
+    };
     '/ui/partitioned_dag_runs': {
         get: {
             req: GetPartitionedDagRunsData;
@@ -10004,7 +10073,7 @@ export type $OpenApiTs = {
                  */
                 404: HTTPExceptionResponse;
                 /**
-                 * Unprocessable Entity
+                 * Unprocessable Content
                  */
                 422: HTTPExceptionResponse;
             };

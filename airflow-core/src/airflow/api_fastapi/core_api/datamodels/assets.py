@@ -39,6 +39,7 @@ from airflow.api_fastapi.core_api.base import BaseModel, StrictBaseModel
 from airflow.api_fastapi.core_api.datamodels.dag_run import TriggerDAGRunPostBody
 from airflow.models.base import ID_LEN
 from airflow.utils.types import DagRunType
+from airflow.api_fastapi.core_api.datamodels.trigger import TriggerResponse
 
 if TYPE_CHECKING:
     from airflow.models.asset import AssetModel
@@ -86,6 +87,7 @@ class AssetWatcherResponse(BaseModel):
     name: str
     trigger_id: int
     created_date: datetime
+    trigger: TriggerResponse | None
 
 
 class AssetResponse(BaseModel):
@@ -137,6 +139,7 @@ class AssetResponse(BaseModel):
                 "name": watcher.name,
                 "trigger_id": watcher.trigger_id,
                 "created_date": watcher.trigger.created_date,
+                "trigger": None,
             }
             for watcher in asset.watchers
         ]

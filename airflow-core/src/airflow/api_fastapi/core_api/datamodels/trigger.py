@@ -22,6 +22,7 @@ from typing import Annotated
 from pydantic import BeforeValidator, ConfigDict, Field
 
 from airflow.api_fastapi.core_api.base import BaseModel
+from airflow.api_fastapi.core_api.datamodels.job import JobResponse
 
 
 def _remove_kwargs(_: object) -> str:
@@ -53,3 +54,4 @@ class TriggerResponse(BaseModel):
     created_date: datetime
     queue: str | None
     triggerer_id: int | None
+    triggerer_job: JobResponse | None

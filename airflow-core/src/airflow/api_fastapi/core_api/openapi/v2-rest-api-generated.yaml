@@ -1770,7 +1770,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/HTTPExceptionResponse'
-          description: Unprocessable Entity
+          description: Unprocessable Content
   /api/v2/connections:
     get:
       tags:
@@ -4441,7 +4441,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/HTTPExceptionResponse'
-          description: Unprocessable Entity
+          description: Unprocessable Content
     patch:
       tags:
       - DAG
@@ -4568,7 +4568,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/HTTPExceptionResponse'
-          description: Unprocessable Entity
+          description: Unprocessable Content
   /api/v2/dags/{dag_id}/details:
     get:
       tags:
@@ -12933,11 +12933,16 @@ components:
           type: string
           format: date-time
           title: Created Date
+        trigger:
+          anyOf:
+          - $ref: '#/components/schemas/TriggerResponse'
+          - type: 'null'
       type: object
       required:
       - name
       - trigger_id
       - created_date
+      - trigger
       title: AssetWatcherResponse
       description: Asset watcher serializer for responses.
     AsyncConnectionTestResponse:
@@ -18793,6 +18798,10 @@ components:
           - type: integer
           - type: 'null'
           title: Triggerer Id
+        triggerer_job:
+          anyOf:
+          - $ref: '#/components/schemas/JobResponse'
+          - type: 'null'
       type: object
       required:
       - id
@@ -18801,6 +18810,7 @@ components:
       - created_date
       - queue
       - triggerer_id
+      - triggerer_job
       title: TriggerResponse
       description: Trigger serializer for responses.
     TriggererInfoResponse:

@@ -445,6 +445,57 @@ ToTriggerSupervisor = Annotated[
 The types of messages that the async Trigger Runner can send back up to the supervisor process.
 """
 
+@attrs.define(kw_only=True)
+class WatcherLoggingFactory:
+    log_to_file: bool
+    trigger: Trigger
+    log_path: str | None
+
+    bound_logger: WrappedLogger = attrs.field(init=False, repr=False)
+
+    _filehandle: TextIO | BinaryIO = attrs.field(init=False, repr=False)
+
+    def __init__(self, trigger: Trigger, log_to_file: bool = False, log_path: str | None = None):
+        self.trigger = trigger
+        self.log_to_file = log_to_file
+        self.log_path = log_path
+
+    def __call__(self, processors: Iterable[structlog.typing.Processor]) -> WrappedLogger:
+        if hasattr(self, "bound_logger"):
+            return self.bound_logger
+
+        if self.log_to_file:
+            from airflow.sdk.log import init_log_file
+
+            log_file = init_log_file(self.log_path)
+            self._filehandle = log_file.open("wb")
+            underlying_logger = structlog.BytesLogger(self._filehandle)
+        else:
+            from airflow.sdk.log import configure_logging
+            #configure_logging(json_output=conf.getboolean("logging", "json_logs", fallback=False))
+            underlying_logger = structlog.get_logger(logger_name=__name__)
+
+        logger = structlog.wrap_logger(underlying_logger, processors=processors)
+
+        logger = logger.bind(trigger=self.trigger, trigger_id=self.trigger.id)
+
+        self.bound_logger = logger
+        return self.bound_logger
+
+    def close(self):
+        # Explicitly close the file descriptor.
+        if hasattr(self, "_filehandle") and self._filehandle and not self._filehandle.closed:
+            self._filehandle.close()
+
+    def upload_to_remote(self):
+        from airflow.sdk.log import upload_to_remote
+
+        if not hasattr(self, "bound_logger"):
+            # Never actually called, nothing to do
+            return
+        if self.log_to_file:
+            upload_to_remote(self.bound_logger, None)
+
 
 @attrs.define(kw_only=True)
 class TriggerLoggingFactory:
@@ -901,6 +952,13 @@ class TriggerRunnerSupervisor(WatchedSubprocess):
                 # log file's parent directory after upload, which must not hold other callbacks' logs.
                 self.logger_cache[trigger.id] = TriggerLoggingFactory(
                     log_path=f"triggerer_callbacks/{dag_id}/{run_id}/{callback.id}/callback.log",
+                )
+            else:
+                log_to_file = conf.getboolean("trigger", "log_to_file", fallback=False)
+                self.logger_cache[trigger.id] = WatcherLoggingFactory(
+                    trigger=trigger,
+                    log_to_file=log_to_file,
+                    log_path=f"trigger-{trigger.id}.log"
                 )
 
             return workloads.RunTrigger(

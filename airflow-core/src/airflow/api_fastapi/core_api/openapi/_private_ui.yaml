@@ -326,6 +326,166 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/HTTPValidationError'
+  /ui/assetwatchers/{assetwatcher_id}:
+    get:
+      tags:
+      - AssetWatcher
+      summary: Get Assetwatcher
+      operationId: get_assetwatcher
+      security:
+      - OAuth2PasswordBearer: []
+      - HTTPBearer: []
+      parameters:
+      - name: assetwatcher_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Assetwatcher Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AssetWatcherResponse'
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPExceptionResponse'
+          description: Not Found
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /ui/assetwatchers/{assetwatcher_id}/log:
+    get:
+      tags:
+      - AssetWatcher
+      summary: Get Assetwatcher Log
+      description: Get logs for a specific task instance.
+      operationId: get_assetwatcher_log
+      security:
+      - OAuth2PasswordBearer: []
+      - HTTPBearer: []
+      parameters:
+      - name: assetwatcher_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Assetwatcher Id
+      - name: full_content
+        in: query
+        required: false
+        schema:
+          type: boolean
+          default: false
+          title: Full Content
+      - name: token
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Token
+      - name: dag_id
+        in: query
+        required: true
+        schema:
+          type: string
+          title: Dag Id
+      - name: dag_run_id
+        in: query
+        required: true
+        schema:
+          type: string
+          title: Dag Run Id
+      - name: task_id
+        in: query
+        required: true
+        schema:
+          type: string
+          title: Task Id
+      - name: map_index
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: -1
+          title: Map Index
+      - name: region_id
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+          title: Region Id
+      - name: region_index
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: integer
+            minimum: -1
+          - type: 'null'
+          title: Region Index
+      - name: accept
+        in: header
+        required: false
+        schema:
+          type: string
+          enum:
+          - application/json
+          - application/x-ndjson
+          - '*/*'
+          default: '*/*'
+          title: Accept
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskInstancesLogResponse'
+            application/x-ndjson:
+              schema:
+                type: string
+                example: '{"content": "content"}
+
+                  {"content": "content"}
+
+                  '
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPExceptionResponse'
+          description: Bad Request
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPExceptionResponse'
+          description: Not Found
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPExceptionResponse'
+          description: Conflict
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
   /ui/dags/{dag_id}/dagRuns/{dag_run_id}/stats:
     get:
       tags:
@@ -2481,7 +2641,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/HTTPExceptionResponse'
-          description: Unprocessable Entity
+          description: Unprocessable Content
   /ui/grid/loop-history/{dag_id}/{group_id}:
     get:
       tags:
@@ -3157,11 +3317,16 @@ components:
           type: string
           format: date-time
           title: Created Date
+        trigger:
+          anyOf:
+          - $ref: '#/components/schemas/TriggerResponse'
+          - type: 'null'
       type: object
       required:
       - name
       - trigger_id
       - created_date
+      - trigger
       title: AssetWatcherResponse
       description: Asset watcher serializer for responses.
     AuthenticatedMeResponse:
@@ -6329,6 +6494,10 @@ components:
           - type: integer
           - type: 'null'
           title: Triggerer Id
+        triggerer_job:
+          anyOf:
+          - $ref: '#/components/schemas/JobResponse'
+          - type: 'null'
       type: object
       required:
       - id
@@ -6337,6 +6506,7 @@ components:
       - created_date
       - queue
       - triggerer_id
+      - triggerer_job
       title: TriggerResponse
       description: Trigger serializer for responses.
     UIAlert:

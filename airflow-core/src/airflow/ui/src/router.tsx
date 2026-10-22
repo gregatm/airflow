@@ -29,6 +29,7 @@ import { Asset } from "src/pages/Asset";
 import { AssetEvents } from "src/pages/Asset/AssetEvents";
 import { AssetStateStore } from "src/pages/Asset/AssetStateStore";
 import { AssetsList } from "src/pages/AssetsList";
+import { AssetWatcher } from "src/pages/AssetWatcher";
 import { Configs } from "src/pages/Configs";
 import { Connections } from "src/pages/Connections";
 import { Dag } from "src/pages/Dag";
@@ -155,6 +156,10 @@ export const routerConfig = [
         ],
         element: <Asset />,
         path: "assets/:assetId",
+      },
+      {
+        element: <AssetWatcher />,
+        path: "assetwatchers/:watcherId"
       },
       {
         element: <DagBundles />,

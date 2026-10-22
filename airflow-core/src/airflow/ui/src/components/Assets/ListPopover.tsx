@@ -23,7 +23,7 @@ import { useTranslation } from "react-i18next";
 
 import type { AssetAliasResponse, AssetWatcherResponse } from "openapi/requests/types.gen";
 
-import { Popover } from "src/system-components";
+import { Popover, RouterLink } from "src/system-components";
 
 import Time from "src/components/Time";
 
@@ -72,14 +72,15 @@ export const AliasesPopover = ({ aliases }: { readonly aliases: Array<AssetAlias
 
 export const WatchersPopover = ({ watchers }: { readonly watchers: Array<AssetWatcherResponse> }) => {
   const { t: translate } = useTranslation("assets");
-
   return (
     <ListPopover
       items={watchers.map((watcher) => ({
-        key: String(watcher.trigger_id),
+        key: String(watcher.name),
         label: (
           <>
-            {watcher.name} <Time datetime={watcher.created_date} />
+            <RouterLink to={"/assetwatchers/" + watcher.name}>
+              {watcher.name} <Time datetime={watcher.created_date} />
+            </RouterLink>
           </>
         ),
       }))}

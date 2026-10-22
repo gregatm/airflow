@@ -25,9 +25,11 @@ from functools import cached_property
 from typing import TYPE_CHECKING
 
 from airflow.configuration import conf
+from airflow.utils.log.file_watcher_handler import FileWatcherHandler, StructuredLogMessage
 from airflow.utils.log.file_task_handler import FileTaskHandler, StructuredLogMessage
 from airflow.utils.log.logging_mixin import ExternalLoggingMixin
 from airflow.utils.state import TaskInstanceState
+from airflow.models.asset import AssetWatcherModel
 
 if TYPE_CHECKING:
     from typing import TypeAlias
@@ -39,6 +41,90 @@ LogReaderOutputStream: TypeAlias = Generator[str, None, None]
 
 READ_BATCH_SIZE = 1024
 
+class WatcherLogReader:
+    """ Watcher log reader."""
+
+    def read_log_chunks(
+        self,
+        assetWatcher: AssetWatcherModel,
+        metadata: LogMetadata,
+    ) -> tuple[LogHandlerOutputStream, LogMetadata]:
+        logger = self.log_handler
+        print(logger)
+        return logger.read(assetWatcher, metadata=metadata)
+
+    @cached_property
+    def log_handler(self):
+        """Get the log handler which is configured to read logs."""
+        task_log_reader = conf.get("logging", "task_log_reader")
+
+        def handlers():
+            """
+            Yield all handlers first from airflow.task logger then root logger.
+
+            Depending on whether we're in a running task, it could be in either of these locations.
+            """
+            #yield from logging.getLogger("airflow.task").handlers
+            #yield from logging.getLogger().handlers
+
+            fallback = FileWatcherHandler()
+            fallback.name = task_log_reader
+            yield fallback
+
+        return next((h for h in handlers() if h.name == task_log_reader), None)
+
+    def read_log_stream(
+        self,
+        assetWatcher: AssetWatcherModel,
+        metadata: LogMetadata,
+    ) -> Iterator[str]:
+        """
+        Continuously read log to the end.
+
+        :param assetWatcher: Trigger
+        :param metadata: A dictionary containing information about how to read the task log
+        """
+
+        for key in ("end_of_log", "max_offset", "offset", "log_pos"):
+            # https://mypy.readthedocs.io/en/stable/typed_dict.html#supported-operations
+            metadata.pop(key, None)  # type: ignore[misc]
+        empty_iterations = 0
+
+        while True:
+            log_stream, out_metadata = self.read_log_chunks(assetWatcher.trigger_id, metadata)
+            yield from (f"{log.model_dump_json()}\n" for log in log_stream)
+
+            if not out_metadata.get("end_of_log", False):
+                if log_stream:
+                    empty_iterations = 0
+                else:
+                    # we did not receive any logs in this loop
+                    # sleeping to conserve resources / limit requests on external services
+                    time.sleep(self.STREAM_LOOP_SLEEP_SECONDS)
+                    empty_iterations += 1
+                    if empty_iterations >= self.STREAM_LOOP_STOP_AFTER_EMPTY_ITERATIONS:
+                        # we have not received any logs for a while, so we stop the stream
+                        # this is emitted as json to avoid breaking the ndjson stream format
+                        yield '{"event": "Log stream stopped - End of log marker not found; logs may be incomplete."}\n'
+                        return
+            else:
+                # https://mypy.readthedocs.io/en/stable/typed_dict.html#supported-operations
+                metadata.clear()  # type: ignore[attr-defined]
+                metadata.update(out_metadata)
+                return
+
+    @property
+    def supports_read(self):
+        """Checks if a read operation is supported by a current log handler."""
+        return hasattr(self.log_handler, "read")
+
+    @property
+    def supports_external_link(self) -> bool:
+        """Check if the logging handler supports external links (e.g. to Elasticsearch, Stackdriver, etc)."""
+        if not isinstance(self.log_handler, ExternalLoggingMixin):
+            return False
+
+        return self.log_handler.supports_external_link
 
 class TaskLogReader:
     """Task log reader."""

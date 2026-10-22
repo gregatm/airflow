@@ -779,10 +779,20 @@ export const $AssetWatcherResponse = {
             type: 'string',
             format: 'date-time',
             title: 'Created Date'
+        },
+        trigger: {
+            anyOf: [
+                {
+                    '$ref': '#/components/schemas/TriggerResponse'
+                },
+                {
+                    type: 'null'
+                }
+            ]
         }
     },
     type: 'object',
-    required: ['name', 'trigger_id', 'created_date'],
+    required: ['name', 'trigger_id', 'created_date', 'trigger'],
     title: 'AssetWatcherResponse',
     description: 'Asset watcher serializer for responses.'
 } as const;
@@ -9439,10 +9449,20 @@ export const $TriggerResponse = {
                 }
             ],
             title: 'Triggerer Id'
+        },
+        triggerer_job: {
+            anyOf: [
+                {
+                    '$ref': '#/components/schemas/JobResponse'
+                },
+                {
+                    type: 'null'
+                }
+            ]
         }
     },
     type: 'object',
-    required: ['id', 'classpath', 'kwargs', 'created_date', 'queue', 'triggerer_id'],
+    required: ['id', 'classpath', 'kwargs', 'created_date', 'queue', 'triggerer_id', 'triggerer_job'],
     title: 'TriggerResponse',
     description: 'Trigger serializer for responses.'
 } as const;
